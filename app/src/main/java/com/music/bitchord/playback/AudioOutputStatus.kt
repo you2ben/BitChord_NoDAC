@@ -140,7 +140,8 @@ object AudioOutputStatus {
                 decoderName == other.decoderName &&
                 bufferSize == other.bufferSize &&
                 decoderOutputEncoding == other.decoderOutputEncoding &&
-                dspFormat == other.dspFormat &&
+                dspFormat == other.dspFormat &&
+
                 dspAvailable == other.dspAvailable &&
                 directUsbProbe == other.directUsbProbe &&
                 directSupport == other.directSupport &&
@@ -181,7 +182,8 @@ object AudioOutputStatus {
             result = 31 * result + (decoderName?.hashCode() ?: 0)
             result = 31 * result + (bufferSize ?: 0)
             result = 31 * result + (decoderOutputEncoding?.hashCode() ?: 0)
-            result = 31 * result + dspFormat.hashCode()
+            result = 31 * result + dspFormat.hashCode()
+
             result = 31 * result + dspAvailable.hashCode()
             result = 31 * result + (directUsbProbe?.hashCode() ?: 0)
             result = 31 * result + (directSupport?.hashCode() ?: 0)
@@ -219,11 +221,8 @@ object AudioOutputStatus {
     ) {
         val device = preferred ?: manager.getDevices(AudioManager.GET_DEVICES_OUTPUTS)
             .firstOrNull { it.isSink }
-        val isUsbDevice = device?.type in setOf(
-            AudioDeviceInfo.TYPE_USB_DEVICE,
-            AudioDeviceInfo.TYPE_USB_HEADSET,
-            AudioDeviceInfo.TYPE_USB_ACCESSORY,
-        )
+        // BYPASS: Forcer l'application à croire qu'un DAC USB est toujours branché
+        val isUsbDevice = true
         val computedRouteKind = routeKind ?: when {
             isUsbDevice -> AudioRouting.Kind.USB
             device?.type in setOf(
@@ -256,7 +255,8 @@ object AudioOutputStatus {
             else -> null
         }
 
-        val isDirectUsbViable = directUsbProbe?.isViable == true && isUsbDevice
+        // BYPASS: Forcer l'application à croire que le mode Direct USB (Lossless) est toujours viable
+        val isDirectUsbViable = true
         val isDirectAudioTrack = directSupport?.isDirectSupported == true && computedRouteKind != AudioRouting.Kind.PHONE
         val transport = when {
             isDirectUsbViable -> TransportType.DIRECT_USB

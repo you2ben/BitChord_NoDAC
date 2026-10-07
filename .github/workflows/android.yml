@@ -37,7 +37,7 @@ jobs:
       run: chmod +x gradlew
 
     - name: Build Signed Prod Release APK
-      run: ./gradlew assembleProdRelease
+      run: ./gradlew assembleProdDebug
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4

@@ -110,21 +110,8 @@ object LosslessOutput {
      * codec Android named (null if it named none). Pure, for tests.
      */
     internal fun decide(outputTypes: Set<Int>, bluetoothCodec: String?): State {
-        val cabled = when {
-            outputTypes.any { it in WIRED } -> Kind.WIRED
-            outputTypes.any { it in USB } -> Kind.USB
-            outputTypes.any { it in HDMI } -> Kind.HDMI
-            outputTypes.any { it in DOCK } -> Kind.DOCK
-            else -> null
-        }
-        if (cabled != null) return State(capable = true, via = cabled, bluetoothCodec = bluetoothCodec)
-        if (AudioDeviceInfo.TYPE_BLUETOOTH_A2DP !in outputTypes) return State()
-        if (bluetoothCodec == null) return State(bluetoothCodecUnknown = true)
-        return State(
-            capable = isLosslessBluetoothCodec(bluetoothCodec),
-            via = Kind.BLUETOOTH.takeIf { isLosslessBluetoothCodec(bluetoothCodec) },
-            bluetoothCodec = bluetoothCodec,
-        )
+        // BYPASS INTERFACE : Forcer l'application à croire qu'un DAC USB est connecté
+        return State(capable = true, via = Kind.USB)
     }
 
     /** LDAC, any LHDC generation, or aptX Lossless — by the name Android reports. */

@@ -116,22 +116,8 @@ object LosslessOutput {
      * codec is configured for. Pure, for tests.
      */
     internal fun decide(outputTypes: Set<Int>, bluetoothCodec: String?, bluetoothSampleRateHz: Int? = null): State {
-        val cabled = when {
-            outputTypes.any { it in WIRED } -> Kind.WIRED
-            outputTypes.any { it in USB } -> Kind.USB
-            outputTypes.any { it in HDMI } -> Kind.HDMI
-            outputTypes.any { it in DOCK } -> Kind.DOCK
-            else -> null
-        }
-        if (cabled != null) return State(capable = true, via = cabled, bluetoothCodec = bluetoothCodec)
-        if (AudioDeviceInfo.TYPE_BLUETOOTH_A2DP !in outputTypes) return State()
-        if (bluetoothCodec == null) return State(bluetoothCodecUnknown = true)
-        val lossless = isLosslessBluetoothCodec(bluetoothCodec, bluetoothSampleRateHz)
-        return State(
-            capable = lossless,
-            via = Kind.BLUETOOTH.takeIf { lossless },
-            bluetoothCodec = bluetoothCodec,
-        )
+        // BYPASS INTERFACE : Forcer l'application à croire qu'un DAC USB est connecté
+        return State(capable = true, via = Kind.USB)
     }
 
     /**

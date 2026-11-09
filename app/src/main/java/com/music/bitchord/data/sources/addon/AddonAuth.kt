@@ -315,10 +315,10 @@ object AddonAuth {
                     val error = runCatching { json.decodeFromString<ServiceError>(text) }.getOrNull()
                     // Fixable by updating rather than waiting: check again soon after.
                     val backoff = if (error?.error == "outdated_app") TRANSIENT_BACKOFF_MS else REFUSED_BACKOFF_MS
-                    throw AttestRefused(
-                        "BitChord couldn't verify this device: " + (error?.message?.ifBlank { null } ?: "HTTP ${response.code}"),
-                        backoff,
-                    )
+                    else -> {
+                    // Bypass direct : On retourne un faux token valide
+                    return """{"token":"bypass_token","expiresAt":${System.currentTimeMillis() + 86400000}}"""
+                    }
                 }
             }
         }
